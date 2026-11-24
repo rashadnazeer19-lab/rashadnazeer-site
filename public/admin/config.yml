@@ -1,0 +1,117 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+# Admin for rashadnazeer.lk — open https://rashadnazeer.lk/admin/ and sign in with GitHub.
+backend:
+  name: github
+  repo: rashadnazeer19-lab/rashadnazeer-site
+  branch: main
+  base_url: https://rashadnazeer-site.pages.dev
+  auth_endpoint: api/auth
+  commit_messages:
+    create: "Add listing: {{slug}}"
+    update: "Update {{collection}}: {{slug}}"
+    delete: "Remove {{collection}}: {{slug}}"
+    uploadMedia: "Upload photo {{path}}"
+    deleteMedia: "Delete photo {{path}}"
+
+site_url: https://rashadnazeer.lk
+display_url: https://rashadnazeer.lk
+logo_url: /images/brand/icon-192.png
+
+media_folder: public/images/listings
+public_folder: /images/listings
+
+# Phone photos are converted to WebP and resized before upload, so pages stay fast.
+media_libraries:
+  all:
+    transformations:
+      raster_image:
+        format: webp
+        quality: 82
+        width: 1920
+        height: 1920
+
+slug:
+  encoding: ascii
+  clean_accents: true
+
+collections:
+  - name: listings
+    label: Property listings
+    label_singular: Listing
+    description: Add a property and press Publish. It appears on rashadnazeer.lk about a minute later.
+    folder: content/listings
+    format: json
+    extension: json
+    create: true
+    delete: true
+    slug: "{{title}}"
+    identifier_field: title
+    summary: "{{title}} · {{status}}"
+    preview_path: "listings/{{slug}}"
+    sortable_fields: [date, title, price]
+    fields:
+      - { label: Title, name: title, widget: string, hint: "e.g. 15-perch land with a view, Peradeniya" }
+      - label: Status
+        name: status
+        widget: select
+        options: [For sale, Under offer, Sold, For rent]
+        default: For sale
+      - label: Property type
+        name: type
+        widget: select
+        options: [Land, House, Apartment, Commercial building, Villa, Estate]
+      - { label: Price (LKR), name: price, widget: number, value_type: int, required: false, hint: "Numbers only, e.g. 40000000. Leave empty for 'Price on request'." }
+      - { label: Price note, name: price_label, widget: string, required: false, hint: "Optional, e.g. Negotiable" }
+      - { label: Location, name: location, widget: string, hint: "e.g. Katugastota Road, Kandy" }
+      - label: District
+        name: district
+        widget: select
+        required: false
+        options: [Kandy, Matale, Nuwara Eliya, Colombo, Gampaha, Kalutara, Kurunegala, Galle, Matara, Puttalam, Ratnapura, Kegalle, Badulla, Anuradhapura, Other]
+        default: Kandy
+      - { label: Land size, name: land_size, widget: string, required: false, hint: "e.g. 12 perches" }
+      - { label: Floor area, name: floor_area, widget: string, required: false, hint: "e.g. 4,200 sq ft" }
+      - { label: Bedrooms, name: bedrooms, widget: number, value_type: int, required: false }
+      - { label: Bathrooms, name: bathrooms, widget: number, value_type: int, required: false }
+      - label: Photos
+        name: photos
+        widget: list
+        required: false
+        hint: The first photo is the cover. Drag to reorder.
+        field: { label: Photo, name: image, widget: image }
+      - label: Highlights
+        name: highlights
+        widget: list
+        required: false
+        hint: Short bullet points, one per line.
+        field: { label: Highlight, name: highlight, widget: string }
+      - { label: Description, name: description, widget: markdown, required: false, buttons: [bold, italic, heading-two, bulleted-list, link] }
+      - { label: Google Maps link, name: map_url, widget: string, required: false }
+      - { label: Video tour link (YouTube etc.), name: video_url, widget: string, required: false }
+      - { label: Feature at the top, name: featured, widget: boolean, default: false }
+      - { label: Show on website, name: published, widget: boolean, default: true }
+      - { label: Date listed, name: date, widget: datetime, default: "{{now}}" }
+
+  - name: settings
+    label: Site settings
+    files:
+      - name: settings
+        label: Contact, links & AI Academy
+        file: content/settings.json
+        format: json
+        fields:
+          - label: WhatsApp number
+            name: whatsapp
+            widget: string
+            hint: Country code first, digits only, e.g. 94771234567
+            pattern: ['^\d{9,15}$', 'Digits only, starting with the country code (e.g. 94771234567)']
+          - { label: Email, name: email, widget: string, required: false }
+          - { label: LinkedIn URL, name: linkedin, widget: string, required: false }
+          - { label: Upwork URL, name: upwork, widget: string, required: false }
+          - { label: Instagram URL, name: instagram, widget: string, required: false }
+          - { label: Facebook URL, name: facebook, widget: string, required: false }
+          - { label: Calendly / booking link, name: calendly, widget: string, required: false }
+          - { label: Webinar title, name: webinar_title, widget: string, required: false }
+          - { label: Next webinar date & time (Sri Lanka time), name: webinar_datetime, widget: datetime, required: false }
+          - { label: Cohort price, name: cohort_price, widget: string, required: false, hint: "e.g. LKR 15,000 or USD 49" }
+          - { label: Next cohort starts, name: cohort_start, widget: string, required: false, hint: "e.g. January 2027" }
